@@ -1,0 +1,75 @@
+{
+  "title": "Tourism Explorer",
+  "description": "Surfaces popular tourist attractions, landmarks, museums, monuments, viewpoints and other points of interest for a given city. Scoped to sights and attractions only - excludes restaurants, cafes, bars, shopping and lodging.",
+  "componentScope": {
+    "supportedIntents": [
+      {
+        "intent": "tourism-search",
+        "description": "Queries asking what to see or visit in a city. Handles generic attraction requests as well as requests scoped to a specific kind of sight such as museums, landmarks, monuments or viewpoints.",
+        "example": [
+          "Tourist attractions in NYC",
+          "Things to do in Paris",
+          "Places to visit in Kyoto",
+          "Landmarks in Rome",
+          "Sights near Tokyo",
+          "Points of interest in London"
+        ]
+      }
+    ]
+  },
+  "schema": {
+    "$defs": {
+      "attractionCategory": {
+        "type": "string",
+        "description": "Kind of tourism point of interest requested, e.g. 'sight', 'landmark', 'museum', 'monument', 'viewpoint', 'historical site'.",
+        "enum": [
+          "sight",
+          "landmark",
+          "museum",
+          "monument",
+          "historical",
+          "viewpoint",
+          "place_of_worship",
+          "any"
+        ]
+      }
+    },
+    "type": "object",
+    "description": "Main query object defining a tourism attraction request for a city.",
+    "properties": {
+      "type": {
+        "type": "string",
+        "description": "Kind of request: 'list' to retrieve attractions for a city or 'query' for a category-filtered search.",
+        "enum": ["list", "query"]
+      },
+      "filters": {
+        "type": "object",
+        "description": "Filters narrowing the attraction search.",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "Name of the city whose attractions are requested. Resolved by NER as an HD_LOCATION entity."
+          },
+          "category": { "$ref": "#/$defs/attractionCategory" },
+          "radius": {
+            "type": "number",
+            "description": "Search radius in metres around the resolved city centre. Defaults to 5000."
+          }
+        },
+        "additionalProperties": true
+      },
+      "features": {
+        "type": "array",
+        "description": "Attraction fields the component surfaces.",
+        "items": {
+          "type": "string",
+          "enum": ["name", "category", "coordinates", "description", "address"]
+        }
+      },
+      "entities": {
+        "collections": ["CITIES"]
+      }
+    },
+    "required": ["type", "filters", "features", "entities"]
+  }
+}
